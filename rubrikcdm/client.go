@@ -123,6 +123,9 @@ func (c *Credentials) commonAPI(callType, apiVersion, apiEndpoint string, config
 	case "POST":
 		convertedConfig, _ := json.Marshal(config)
 		request, _ = http.NewRequest(callType, requestURL, bytes.NewBuffer(convertedConfig))
+	case "PUT":
+		convertedConfig, _ := json.Marshal(config)
+		request, _ = http.NewRequest(callType, requestURL, bytes.NewBuffer(convertedConfig))
 	case "PATCH":
 		convertedConfig, _ := json.Marshal(config)
 		request, _ = http.NewRequest(callType, requestURL, bytes.NewBuffer(convertedConfig))
@@ -344,6 +347,22 @@ func (c *Credentials) Post(apiVersion, apiEndpoint string, config interface{}, t
 	httpTimeout := httpTimeout(timeout)
 
 	apiRequest, err := c.commonAPI("POST", apiVersion, apiEndpoint, config, httpTimeout)
+	if err != nil {
+		return nil, err
+	}
+
+	return apiRequest, nil
+
+}
+
+// Put sends a PUT request to the provided Rubrik API endpoint and returns the full API response. Supported "apiVersions" are v1, v2, and internal.
+// The optional timeout value corresponds to the number of seconds to wait to establish a connection to the Rubrik cluster before returning a
+// timeout error. If no value is provided, a default of 15 seconds will be used.
+func (c *Credentials) Put(apiVersion, apiEndpoint string, config interface{}, timeout ...int) (interface{}, error) {
+
+	httpTimeout := httpTimeout(timeout)
+
+	apiRequest, err := c.commonAPI("PUT", apiVersion, apiEndpoint, config, httpTimeout)
 	if err != nil {
 		return nil, err
 	}
